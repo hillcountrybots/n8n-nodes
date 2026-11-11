@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-hillcountrybots-seo-audit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "n8n community node for the Hill Country Bots SEO Audit Tool on Apify. Runs a website SEO audit with your own Apify token and returns page scores, top fixes and an HTML report. About $2 per 1,000 audited pages on Apify; failures are free.",
   "keywords": [
     "apify",
@@ -30,7 +30,9 @@
     "lint:fix": "n8n-node lint --fix",
     "merge:api": "npx openapi-merge-cli --config ./openapi.config.json",
     "test": "WEBHOOK_URL=https://localhost:5678 jest --config jest.config.js",
-    "create-actor-app": "npx tsx scripts/cli.ts"
+    "create-actor-app": "npx tsx scripts/cli.ts",
+    "release": "n8n-node release",
+    "prepublishOnly": "n8n-node prerelease"
   },
   "files": [
     "dist/credentials",
@@ -50,7 +52,7 @@
     "n8n-workflow": "*"
   },
   "devDependencies": {
-    "@n8n/node-cli": "*",
+    "@n8n/node-cli": "^0.56.2",
     "@types/jest": "^29.5.14",
     "@types/node": "^24.0.1",
     "apify-client": "^2.16.0",

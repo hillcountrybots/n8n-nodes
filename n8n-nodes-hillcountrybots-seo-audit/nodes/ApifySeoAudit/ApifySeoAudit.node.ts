@@ -3,7 +3,9 @@ import {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
-	NodeConnectionType,
+	JsonObject,
+	NodeApiError,
+	NodeConnectionTypes,
 } from 'n8n-workflow';
 import { properties } from './ApifySeoAudit.properties';
 import { runActor } from './helpers/executeActor';
@@ -41,8 +43,8 @@ export class ApifySeoAudit implements INodeType {
 		defaults: {
 			name: DISPLAY_NAME,
 		},
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		inputs: [NodeConnectionTypes.Main],
+		outputs: [NodeConnectionTypes.Main],
 		usableAsTool: true,
 		credentials: [
 			{
@@ -81,7 +83,7 @@ export class ApifySeoAudit implements INodeType {
 					});
 					continue;
 				}
-				throw error;
+				throw new NodeApiError(this.getNode(), error as JsonObject);
 			}
 		}
 

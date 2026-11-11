@@ -1,0 +1,117 @@
+# Publishes one of the n8n community node packages in this monorepo
+# to npm, with a provenance statement, from GitHub Actions.
+#
+# Starting May 1 2026, n8n requires verified community nodes to be
+# published this way. Provenance lets anyone cryptographically verify
+# that this workflow built the package, from this repository and commit.
+#
+# Prerequisites: each package has @n8n/node-cli >= 0.23.0 and a
+# "release" script that runs `n8n-node release`.
+#
+# One-time setup (token fallback is already configured as NPM_TOKEN):
+#   Option A — OIDC Trusted Publishing on npmjs.com, package settings,
+#   Publish access > Trusted Publishers, GitHub Actions:
+#     Repository owner: hillcountrybots
+#     Repository name:  n8n-nodes
+#     Workflow name:    publish.yml
+#   Option B — granular npm token stored as the NPM_TOKEN repo secret.
+#
+# Release process:
+#   1. Bump the package version in its package.json (and lockfile if needed).
+#   2. Commit and push to main.
+#   3. Tag and push, which triggers this workflow:
+#        n8n-nodes-hillcountrybots-seo-audit@1.0.1
+#        n8n-nodes-hillcountrybots-bulk-pagespeed-checker@1.0.1
+#      Or run the workflow manually and pick the package.
+#
+# This workflow publishes each chosen package once. It stops if that
+# version is already on npm.
+
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package directory to publish
+        required: true
+        type: choice
+        options:
+          - n8n-nodes-hillcountrybots-seo-audit
+          - n8n-nodes-hillcountrybots-bulk-pagespeed-checker
+  push:
+    tags:
+      - 'n8n-nodes-hillcountrybots-seo-audit@*.*.*'
+      - 'n8n-nodes-hillcountrybots-bulk-pagespeed-checker@*.*.*'
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve package directory
+        id: pkg
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            DIR="${{ inputs.package }}"
+          else
+            DIR="${GITHUB_REF_NAME%@*}"
+          fi
+          case "$DIR" in
+            n8n-nodes-hillcountrybots-seo-audit|n8n-nodes-hillcountrybots-bulk-pagespeed-checker) ;;
+            *) echo "Unknown package directory: $DIR" >&2; exit 1 ;;
+          esac
+          if [ ! -f "$DIR/package.json" ]; then
+            echo "Missing $DIR/package.json" >&2
+            exit 1
+          fi
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: ${{ steps.pkg.outputs.dir }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: npm ci
+
+      - name: Refuse a version that is already on npm
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: |
+          set -euo pipefail
+          NAME="$(node -p "require('./package.json').name")"
+          VER="$(node -p "require('./package.json').version")"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAG_VER="${GITHUB_REF_NAME##*@}"
+            if [ "$TAG_VER" != "$VER" ]; then
+              echo "Tag version $TAG_VER does not match package.json $VER" >&2
+              exit 1
+            fi
+          fi
+          if npm view "$NAME@$VER" version >/dev/null 2>&1; then
+            echo "$NAME@$VER is already on npm. Stopping so we do not publish twice." >&2
+            exit 1
+          fi
+          echo "Will publish $NAME@$VER"
+
+      - name: Release
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: |
+          set -euo pipefail
+          if [ -n "${NPM_TOKEN:-}" ]; then
+            npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+          fi
+          npm run release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

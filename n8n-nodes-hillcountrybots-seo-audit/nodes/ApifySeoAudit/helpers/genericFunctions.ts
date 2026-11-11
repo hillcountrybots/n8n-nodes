@@ -71,7 +71,9 @@ export async function apiRequest(
 			options,
 		);
 	} catch (error) {
-		if (error instanceof NodeApiError) throw error;
+		if (error instanceof NodeOperationError) {
+			throw new NodeOperationError(this.getNode(), error.message);
+		}
 
 		if (error.response?.body) {
 			throw new NodeApiError(this.getNode(), error, {
