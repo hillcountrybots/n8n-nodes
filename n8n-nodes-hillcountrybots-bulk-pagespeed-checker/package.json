@@ -1,0 +1,74 @@
+{
+  "name": "n8n-nodes-hillcountrybots-bulk-pagespeed-checker",
+  "version": "1.0.0",
+  "description": "n8n community node for the Hill Country Bots Bulk PageSpeed Insights Test on Apify. Runs Google PageSpeed Insights on many URLs with your own Apify token. About $3 per 1,000 successful audits; failures are free.",
+  "keywords": [
+    "apify",
+    "apify-actor",
+    "core-web-vitals",
+    "hill-country-bots",
+    "lighthouse",
+    "n8n",
+    "n8n-community-node-package",
+    "n8n-nodes",
+    "pagespeed"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Hill Country Bots",
+    "email": "hillcountrybots@proton.me"
+  },
+  "engines": {
+    "node": ">=18.10"
+  },
+  "packageManager": "npm@10.8.2",
+  "main": "index.js",
+  "scripts": {
+    "build": "n8n-node build",
+    "dev": "n8n-node dev",
+    "lint": "n8n-node lint",
+    "lint:fix": "n8n-node lint --fix",
+    "merge:api": "npx openapi-merge-cli --config ./openapi.config.json",
+    "test": "WEBHOOK_URL=https://localhost:5678 jest --config jest.config.js",
+    "create-actor-app": "npx tsx scripts/cli.ts"
+  },
+  "files": [
+    "dist/credentials",
+    "dist/nodes",
+    "LICENSE.md"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/ApifyApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/ApifyBulkPagespeedChecker/ApifyBulkPagespeedChecker.node.js"
+    ]
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "*",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^24.0.1",
+    "apify-client": "^2.16.0",
+    "chalk": "^5.6.0",
+    "eslint": "^9.32.0",
+    "glob": "^11.0.3",
+    "gulp": "^4.0.2",
+    "jest": "^29.7.0",
+    "nock": "^14.0.5",
+    "prettier": "^3.6.2",
+    "sharp": "^0.34.2",
+    "ts-jest": "^29.3.2",
+    "typescript": "5.9.2"
+  },
+  "homepage": "https://apify.com/hillcountrybots/bulk-pagespeed-checker",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hillcountrybots/n8n-nodes.git",
+    "directory": "n8n-nodes-hillcountrybots-bulk-pagespeed-checker"
+  }
+}
