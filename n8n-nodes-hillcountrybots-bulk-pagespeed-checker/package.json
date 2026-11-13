@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-hillcountrybots-bulk-pagespeed-checker",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "n8n community node for the Hill Country Bots Bulk PageSpeed Insights Test on Apify. Runs Google PageSpeed Insights on many URLs with your own Apify token. About $3 per 1,000 successful audits; failures are free.",
   "keywords": [
     "apify",

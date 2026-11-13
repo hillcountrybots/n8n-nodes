@@ -34,7 +34,7 @@ export class ApifyApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			method: 'GET',
-			url: 'https://api.apify.com/v2/me',
+			url: 'https://api.apify.com/v2/users/me',
 		},
 	};
 }

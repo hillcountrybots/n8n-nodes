@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-hillcountrybots-seo-audit",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "n8n community node for the Hill Country Bots SEO Audit Tool on Apify. Runs a website SEO audit with your own Apify token and returns page scores, top fixes and an HTML report. About $2 per 1,000 audited pages on Apify; failures are free.",
   "keywords": [
     "apify",
